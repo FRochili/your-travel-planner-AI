@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} h-full antialiased`}
     >
-      <body className="bg-gray-900 text-gray-50">
+      <body className="flex flex-col gap-8 justify-center items-center bg-gray-900 text-gray-50">
         <Navbar />
         {children}
       </body>
