@@ -1,9 +1,15 @@
+'use client'
 import { IconMapPin } from "@tabler/icons-react";
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import('@/components/Map'), {ssr:false})
 
 export default function ItineraryCard({itinerary}) {
+    const locations = itinerary.days.flatMap(day => day.activities)
     return (
         <div className="bg-gray-800 border border-gray-500 rounded-xl p-4 flex flex-col gap-4">
             <h2 className="text-lg font-bold">{itinerary.title}</h2>
+            <Map locations={locations} />
             {itinerary.days.map((day) => (
                 <div
                 key={day.day}

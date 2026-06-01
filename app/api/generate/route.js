@@ -28,7 +28,9 @@ export async function POST(request) {
                                 "time": "Morning",
                                 "activity": "activity name",
                                 "description": "short description",
-                                "location": "place name"
+                                "location": "place name",
+                                "lat": 35.6762,
+                                "lng": 139.6503
                             }
                         ]
                     }
