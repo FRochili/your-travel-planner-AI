@@ -19,6 +19,7 @@ export async function POST(request) {
             Return ONLY a JSON object with this exact structure, no extra text:
             {
                 "title": "trip title",
+                "destination": "city, country",
                 "days": [
                     {
                         "day": 1,

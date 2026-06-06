@@ -1,15 +1,63 @@
 'use client'
 import { IconMapPin } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
 const Map = dynamic(() => import('@/components/Map'), {ssr:false})
 
+const getWeatherEmoji = (code) => {
+    if (code === 0) return '☀️'
+    if (code <= 3) return '⛅'
+    if (code <= 55) return '🌧️'
+    if (code <= 77) return '❄️'
+    return '⛈️'
+}
+
 export default function ItineraryCard({itinerary}) {
     const locations = itinerary.days.flatMap(day => day.activities)
+    const [weather, setWeather] = useState(null)
+
+    useEffect(() => {
+        const fetchWeather = async () => {
+            const response = await fetch(`/api/weather?destination=${encodeURIComponent(itinerary.destination)}`)
+            const data = await response.json()
+            setWeather(data.weather)
+        }
+        fetchWeather()
+    }, [])
+
     return (
         <div className="bg-gray-800 border border-gray-500 rounded-xl p-4 flex flex-col gap-4">
             <h2 className="text-lg font-bold">{itinerary.title}</h2>
             <Map locations={locations} />
+            {/* weather section */}
+            <div className="flex flex-col gap-2">
+                <h2 className="font-bold">Weather Forecast:</h2>
+                {weather ? (
+                    <div className="grid grid-cols-7 gap-1">
+                        {weather.time.map((date, index) => (
+                            <div key={date} className="bg-gray-700 rounded-lg p-2 flex flex-col items-center gap-1 text-center">
+                                <span className="text-xs text-gray-400">{date.slice(5)}</span>
+                                <span className="text-lg">{getWeatherEmoji(weather.weathercode[index])}</span>
+                                <span className="text-xs font-bold">{weather.temperature_2m_max[index]}°</span>
+                                <span className="text-xs text-gray-400">{weather.temperature_2m_min[index]}°</span>
+                                <span className="text-xs text-blue-400">{weather.precipitation_probability_max[index]}%</span>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-7 gap-1">
+                        {[1,2,3,4,5,6,7].map((i) => (
+                            <div key={i} className="bg-gray-700 rounded-lg p-2 flex flex-col items-center gap-2">
+                                <div className="bg-gray-600 rounded animate-pulse h-3 w-full"></div>
+                                <div className="bg-gray-600 rounded animate-pulse h-4 w-4"></div>
+                                <div className="bg-gray-600 rounded animate-pulse h-3 w-full"></div>
+                                <div className="bg-gray-600 rounded animate-pulse h-3 w-full"></div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
             {itinerary.days.map((day) => (
                 <div
                 key={day.day}
