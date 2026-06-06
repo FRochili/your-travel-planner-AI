@@ -2,6 +2,7 @@
 import { IconMapPin } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 const Map = dynamic(() => import('@/components/Map'), {ssr:false})
 
@@ -13,9 +14,32 @@ const getWeatherEmoji = (code) => {
     return '⛈️'
 }
 
-export default function ItineraryCard({itinerary}) {
+export default function ItineraryCard({itinerary, user, formData}) {
     const locations = itinerary.days.flatMap(day => day.activities)
     const [weather, setWeather] = useState(null)
+
+    const handleSave = async () => {
+        if (!user) {
+            window.location.href = '/login'
+            return
+        } 
+
+        const {error} = await supabase.from('itineraries').insert({
+            user_id: user.id,
+            title: itinerary.title,
+            destination: itinerary.destination,
+            days: itinerary.days.length,
+            travelers: formData.travelers,
+            budget_min: formData.budgetMin,
+            budget_max: formData.budgetMax,
+            styles: formData.styles,
+            notes: formData.notes,
+            itinerary: itinerary
+        })
+
+        if (error) console.log(error.message)
+        else alert ('Itinerary saved!')
+    }
 
     useEffect(() => {
         const fetchWeather = async () => {
@@ -28,7 +52,15 @@ export default function ItineraryCard({itinerary}) {
 
     return (
         <div className="bg-gray-800 border border-gray-500 rounded-xl p-4 flex flex-col gap-4">
-            <h2 className="text-lg font-bold">{itinerary.title}</h2>
+            <div className="flex justify-between items-center gap-4">
+                <h2 className="text-lg font-bold">{itinerary.title}</h2>
+                <button 
+                    onClick={handleSave}
+                    className="p-2 border rounded-md bg-green-600 border-green-500 cursor-pointer font-bold"
+                >
+                        Save Itinerary
+                </button>
+            </div>
             <Map locations={locations} />
             {/* weather section */}
             <div className="flex flex-col gap-2">

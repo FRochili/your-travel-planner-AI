@@ -1,8 +1,9 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ItinerarySkeleton from "@/components/ItinerarySkeleton";
 import ItineraryCard from "@/components/ItineraryCard";
 import { IconMapPin, IconUsers, IconCalendar, IconWallet, IconHeart, IconNotes, IconSparkles, IconToolsKitchen2, IconBuildingArch, IconTree, IconRun, IconMusicBolt, IconShoppingBag } from "@tabler/icons-react";
+import { supabase } from "@/lib/supabaseClient";
 
 const styles = [
   {name: 'Food', icon: <IconToolsKitchen2 size={18} color="#22c55e" />}, 
@@ -42,6 +43,7 @@ export default function Home() {
 
   const [itinerary, setItinerary] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState(null)
 
   const handleGenerateButton = async() => {
     try {
@@ -61,6 +63,14 @@ export default function Home() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const getUser = async() => {
+      const {data: {user}} = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+  },[])
 
   return (
     <div className="flex flex-col w-full max-w-xl gap-6 mb-8 ">
@@ -195,7 +205,7 @@ export default function Home() {
       {loading && <ItinerarySkeleton />}
 
       {/* itinerary card */}
-      {itinerary && <ItineraryCard itinerary={itinerary} />}
+      {itinerary && <ItineraryCard itinerary={itinerary} user={user} formData={formData} />}
     </div>
   );
 }
