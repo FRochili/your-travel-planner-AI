@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" })
-
 export async function POST(request) {
     try {
+        // initialize inside the function so env vars are available at runtime
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" })
+
         // get form data
         const body = await request.json()
         const {destination, days, travelers, budgetMin, budgetMax, styles, notes} = body
