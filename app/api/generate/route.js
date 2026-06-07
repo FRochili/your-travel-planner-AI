@@ -2,6 +2,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(request) {
     try {
+        const key = process.env.GEMINI_API_KEY
+        console.log('Key exists:', !!key)
+        console.log('Key length:', key?.length)
+        console.log('Key start:', key?.substring(0, 8))
+        
         // initialize inside the function so env vars are available at runtime
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
         const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" })
