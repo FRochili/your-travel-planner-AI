@@ -55,6 +55,10 @@ export default function Home() {
         body: JSON.stringify(formData)
       })
       const data = await response.json()
+      if (data.error) {
+        console.log('API Error: ', data.error)
+        return
+      }
       const parsed = JSON.parse(data.itinerary)
       setItinerary(parsed)
     } catch (error) {

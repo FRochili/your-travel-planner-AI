@@ -56,6 +56,6 @@ export async function POST(request) {
         return Response.json({itinerary: cleanText})
     } catch (error) {
         console.log(error.message)
-        return Response.json({error: 'Failed to generate itinerary'}, {status: 500})
+        return Response.json({error: error.message}, {status: 500})
     }
 }
