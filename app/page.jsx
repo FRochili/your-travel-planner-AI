@@ -205,7 +205,7 @@ export default function Home() {
       {loading && <ItinerarySkeleton />}
 
       {/* itinerary card */}
-      {itinerary && <ItineraryCard itinerary={itinerary} user={user} formData={formData} />}
+      {itinerary && <ItineraryCard itinerary={itinerary} user={user} formData={formData} showSave={true} />}
     </div>
   );
 }

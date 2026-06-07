@@ -14,7 +14,7 @@ const getWeatherEmoji = (code) => {
     return '⛈️'
 }
 
-export default function ItineraryCard({itinerary, user, formData}) {
+export default function ItineraryCard({itinerary, user, formData, showSave}) {
     const locations = itinerary.days.flatMap(day => day.activities)
     const [weather, setWeather] = useState(null)
 
@@ -54,12 +54,14 @@ export default function ItineraryCard({itinerary, user, formData}) {
         <div className="bg-gray-800 border border-gray-500 rounded-xl p-4 flex flex-col gap-4">
             <div className="flex justify-between items-center gap-4">
                 <h2 className="text-lg font-bold">{itinerary.title}</h2>
-                <button 
-                    onClick={handleSave}
-                    className="p-2 border rounded-md bg-green-600 border-green-500 cursor-pointer font-bold"
-                >
-                        Save Itinerary
-                </button>
+                {showSave && 
+                    <button 
+                        onClick={handleSave}
+                        className="p-2 border rounded-md bg-green-600 border-green-500 cursor-pointer font-bold"
+                    >
+                            Save Itinerary
+                    </button>
+                }
             </div>
             <Map locations={locations} />
             {/* weather section */}

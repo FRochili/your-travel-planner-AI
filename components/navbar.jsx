@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export default function Navbar() {
-    
+
     const [isLoggedIn, SetIsLoggedIn] = useState(false)
 
     useEffect(() => {
@@ -36,7 +36,7 @@ export default function Navbar() {
                     height={30}
                     className="rounded-full"
                     />
-                <h1 className="font-bold text-lg">WanderAI</h1>
+                <h1 className="font-bold text-lg">YourTravelPlannerAI</h1>
             </div>
 
             {/*plan, saved, signin*/}
