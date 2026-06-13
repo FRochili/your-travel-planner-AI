@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useStore from "@/lib/store";
 import ItinerarySkeleton from "@/components/ItinerarySkeleton";
 import ItineraryCard from "@/components/ItineraryCard";
@@ -25,6 +25,8 @@ export default function Home() {
     user, setUser,
   } = useStore()
 
+  const [formError, setFormError] = useState({})
+
   const handleAddTraveler = () => {setFormData({...formData, travelers: formData.travelers + 1})}
   const handleReduceTraveler = () => {
     if (formData.travelers > 1) setFormData({...formData, travelers: formData.travelers - 1})
@@ -41,6 +43,18 @@ export default function Home() {
   }
 
   const handleGenerateButton = async() => {
+    //validate all required fields
+    const newFormErrors = {}
+    if (!formData.destination) newFormErrors.destination=true
+    if (!formData.budgetMin || formData.budgetMin <= 0) newFormErrors.budgetMin=true
+    if (!formData.budgetMax || Number(formData.budgetMax) < Number(formData.budgetMin)) newFormErrors.budgetMax=true
+
+    if (Object.keys(newFormErrors).length > 0) {
+      setFormError(newFormErrors)
+      return
+    }
+    setFormError({})
+
     try {
       setItinerary(null)
       setLoading(true)
@@ -77,7 +91,12 @@ export default function Home() {
       <div className="w-full bg-gray-800 border border-gray-500 rounded-xl flex flex-col items-center justify-between gap-4 p-4 ">
         <h1 className="text-lg font-bold">Plan your trip</h1>
         <span>Fill in your details and we will build your perfect itinerary</span>
-        <div className="w-full flex flex-col items-center justify-between gap-4">
+        <div 
+          className="w-full flex flex-col items-center justify-between gap-4"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleGenerateButton()
+          }}
+        >
 
           <div className="grid grid-cols-1 w-full gap-4 lg:grid-cols-2">
             {/*card-destination*/}
@@ -91,8 +110,15 @@ export default function Home() {
                 placeholder="e.g. Tokyo, Japan"
                 value={formData.destination}
                 onChange={(e) => setFormData({...formData, destination: e.target.value})}
-                className="bg-gray-700 rounded-md py-1 px-2 border border-gray-500" 
+                className={`bg-gray-700 rounded-md py-1 px-2 border ${
+                  formError.destination
+                  ? 'border-red-500'
+                  : 'border-gray-500'
+                }`}
               />
+              {formError.destination && (
+                <span className="text-red-500 text-xs">This field is required</span>
+              )}
             </div>
 
             {/*card-duration*/}
@@ -103,10 +129,11 @@ export default function Home() {
               </div>
               <input 
                 type="number" 
+                min={1}
                 placeholder="Days"
                 value={formData.days}
                 onChange={(e) => setFormData({...formData, days: e.target.value})}
-                className="bg-gray-700 rounded-md py-1 px-2 border border-gray-500" 
+                className="bg-gray-700 rounded-md py-1 px-2 border border-gray-500"
               />
             </div>
 
@@ -117,9 +144,15 @@ export default function Home() {
                 <h2 className="text-sm font-bold">Travelers</h2>
               </div>
               <div className="flex items-center">
-                <button onClick={handleReduceTraveler} className="bg-gray-700 w-10 p-2 border border-gray-500 rounded-md cursor-pointer">-</button>
+                <button 
+                  onClick={handleReduceTraveler} 
+                  className="bg-gray-700 rounded-md py-1 px-2 border border-gray-500"
+                >-</button>
                 <div className="w-10 p-2">{formData.travelers}</div>
-                <button onClick={handleAddTraveler} className="bg-gray-700 w-10 p-2 border border-gray-500 rounded-md cursor-pointer">+</button>
+                <button 
+                  onClick={handleAddTraveler} 
+                  className="bg-gray-700 rounded-md py-1 px-2 border border-gray-500"
+                >+</button>
               </div>
             </div>
 
@@ -135,7 +168,11 @@ export default function Home() {
                   placeholder="Min"
                   value={formData.budgetMin}
                   onChange={(e) => setFormData({...formData, budgetMin: e.target.value})}
-                  className="w-full bg-gray-700 rounded-md py-1 px-2 border border-gray-500" 
+                  className={`bg-gray-700 rounded-md py-1 px-2 border ${
+                    formError.budgetMin
+                    ? 'border-red-500'
+                    : 'border-gray-500'
+                  }`}
                 />
                 <span>to</span>
                 <input 
@@ -143,9 +180,16 @@ export default function Home() {
                   placeholder="Max"
                   value={formData.budgetMax}
                   onChange={(e) => setFormData({...formData, budgetMax: e.target.value})}
-                  className="w-full bg-gray-700 rounded-md py-1 px-2 border border-gray-500" 
+                  className={`bg-gray-700 rounded-md py-1 px-2 border ${
+                    formError.budgetMax
+                    ? 'border-red-500'
+                    : 'border-gray-500'
+                  }`}
                 />
               </div>
+              {(formError.budgetMin || formError.budgetMax) && (
+                <span className="text-red-500 text-xs">Minimum budget should not be 0 and maximum budget should be larger than minimum budget</span>
+              )}
             </div>
           </div>
 
