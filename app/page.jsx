@@ -1,5 +1,7 @@
 "use client"
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
+import useStore from "@/lib/store";
 import ItinerarySkeleton from "@/components/ItinerarySkeleton";
 import ItineraryCard from "@/components/ItineraryCard";
 import { IconMapPin, IconUsers, IconCalendar, IconWallet, IconHeart, IconNotes, IconSparkles, IconToolsKitchen2, IconBuildingArch, IconTree, IconRun, IconMusicBolt, IconShoppingBag } from "@tabler/icons-react";
@@ -16,15 +18,12 @@ const styles = [
 
 export default function Home() {
 
-  const [formData, setFormData] = useState({
-    destination: '',
-    days: 1,
-    travelers: 1,
-    budgetMin: 0,
-    budgetMax: 0,
-    styles: [],
-    notes: '',
-  })
+  const {
+    formData, setFormData,
+    itinerary, setItinerary,
+    loading, setLoading,
+    user, setUser,
+  } = useStore()
 
   const handleAddTraveler = () => {setFormData({...formData, travelers: formData.travelers + 1})}
   const handleReduceTraveler = () => {
@@ -40,10 +39,6 @@ export default function Home() {
       setFormData({...formData, styles: [...formData.styles, style]})
     }
   }
-
-  const [itinerary, setItinerary] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState(null)
 
   const handleGenerateButton = async() => {
     try {
@@ -209,7 +204,7 @@ export default function Home() {
       {loading && <ItinerarySkeleton />}
 
       {/* itinerary card */}
-      {itinerary && <ItineraryCard itinerary={itinerary} user={user} formData={formData} showSave={true} />}
+      {itinerary && <ItineraryCard itinerary={itinerary} showSave={true} />}
     </div>
   );
 }

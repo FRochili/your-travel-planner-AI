@@ -2,11 +2,16 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import ItineraryCard from "@/components/ItineraryCard"
+import useStore from "@/lib/store"
 
 export default function SavedPage() {
-    const [itinerary, setItinerary] = useState([])
+    const {
+        savedItinerary, setSavedItinerary,
+        user, setUser
+    } = useStore()
+    
     const [selected, setSelected] = useState(null)
-    const [user, setUser] = useState(null)
+    
 
     useEffect(() => {
         const getUser = async() => {
@@ -22,7 +27,7 @@ export default function SavedPage() {
                 .eq('user_id', user.id)
                 .order('created_at', {ascending: false})
             if (error) console.log(error.message)
-            else setItinerary(data)
+            else setSavedItinerary(data)
         }
         getUser()
     },[])
@@ -33,12 +38,12 @@ export default function SavedPage() {
         .delete()
         .eq('id', id)
     if (error) console.log(error.message)
-        else setItinerary(itinerary.filter((item) => item.id !== id))
+        else setSavedItinerary(savedItinerary.filter((item) => item.id !== id))
     }
 
     return (
         <div className="flex flex-col gap-4 w-full max-w-xl mb-8">
-            {itinerary.length === 0 && (
+            {savedItinerary.length === 0 && (
                 <div className="bg-gray-800 border border-gray-500 rounded-xl p-8 flex flex-col items-center gap-4 text-center text-white">
                     No saved itineraries yet. Go plan a trip!
                     <button 
@@ -49,7 +54,7 @@ export default function SavedPage() {
                     </button>
                 </div>
             )}
-            {itinerary.map((item) => (
+            {savedItinerary.map((item) => (
                 <div key={item.id} onClick={() => setSelected(item)} className="bg-gray-800 border border-gray-500 rounded-xl p-4 flex flex-col gap-4 hover:bg-gray-900 cursor-pointer">
                     <h2 className="text-lg font-bold">Trip title: {item.title}</h2>
                     <span className="text-sm text-gray-400">Destination: {item.destination}</span>
@@ -78,7 +83,7 @@ export default function SavedPage() {
                         >
                             ✕ Close
                         </button>
-                        <ItineraryCard itinerary={selected.itinerary} user={user} formData={{}} showSave={false} />
+                        <ItineraryCard itinerary={selected.itinerary} showSave={false} />
                     </div>
                 </div>
             )}

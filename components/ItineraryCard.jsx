@@ -3,6 +3,7 @@ import { IconMapPin } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import useStore from "@/lib/store";
 
 const Map = dynamic(() => import('@/components/Map'), {ssr:false})
 
@@ -14,7 +15,8 @@ const getWeatherEmoji = (code) => {
     return '⛈️'
 }
 
-export default function ItineraryCard({itinerary, user, formData, showSave}) {
+export default function ItineraryCard({itinerary, showSave}) {
+    const { user, formData } = useStore()
     const locations = itinerary.days.flatMap(day => day.activities)
     const [weather, setWeather] = useState(null)
 

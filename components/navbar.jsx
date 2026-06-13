@@ -1,20 +1,12 @@
 "use client"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
-import { useState, useEffect } from "react"
 import Link from "next/link"
+import useStore from "@/lib/store"
 
 export default function Navbar() {
-
-    const [isLoggedIn, SetIsLoggedIn] = useState(false)
-
-    useEffect(() => {
-        const getUser = async() => {
-            const {data: {user}} = await supabase.auth.getUser()
-            if(user) SetIsLoggedIn(true)
-        }
-        getUser()
-    }, [])
+    
+    const {user} = useStore()
 
     const handleLogin = () => {
         window.location.href = '/login'
@@ -46,7 +38,7 @@ export default function Navbar() {
                     <Link href="/saved" className="hover:text-white text-gray-300 transition">Saved</Link>
                 </nav>
                 {
-                    isLoggedIn 
+                    user 
                     ? <button onClick={()=>handleLogout()} className="border border-gray-500 p-2 rounded-md font-bold cursor-pointer hover:bg-gray-700">Sign out</button>
                     : <button onClick={()=>handleLogin()} className="border border-gray-500 p-2 rounded-md font-bold cursor-pointer hover:bg-gray-700">Sign in</button>
                 }
